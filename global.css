@@ -6,7 +6,7 @@ html, body, .container-fluid{
 }
 .fix{
   position: fixed;
-  top:0%;
+  /*top:0%;*/
 }
 .canvas{
     width:100%;

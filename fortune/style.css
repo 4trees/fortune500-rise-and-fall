@@ -31,10 +31,10 @@ body{
 }
 
 
-.line path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  -webkit-animation: dash 5s linear infinite;
+/*.line path {
+  stroke-dasharray: 2000;
+  /*stroke-dashoffset: 0;*/
+/*  -webkit-animation: dash 5s linear infinite;
   animation: dash 5s linear infinite;
 }
 @-webkit-keyframes dash {
@@ -46,7 +46,7 @@ body{
   to {
     stroke-dashoffset: 0;
   }
-}
+}*/
 @media (min-width: 768px),@media (min-width: 992px) ,@media (min-width: 1200px)  {
 h4{font-size: 2em;}
 
