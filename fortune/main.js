@@ -87,7 +87,7 @@ function checkSlide(e) {
       slides.forEach(slide => {
         // console.log(slide.offsetTop)
         // half way through the slide
-        const slideInAt = (window.scrollY + window.innerHeight) - slide.clientHeight*1.5 ;
+        const slideInAt = (window.scrollY + window.innerHeight) - slide.clientHeight*1.4 ;
         // bottom of the slide
         const slideBottom = slide.offsetTop + slide.clientHeight;
         const isHalfShown = slideInAt > slide.offsetTop;
@@ -203,11 +203,11 @@ function checkSlide(e) {
                 if(!isNotScrolledPast){resetline('.industrial')}
                 break;
             case 'slide16':
-                if(!isNotScrolledPast){plot.selectAll('.dots').style('opacity',.5);resetline('.money');}
+                if(!isNotScrolledPast){resetline('.money');}
                 break;
             case 'slide17':
-        
-                if(X!==undefined){if(!isNotScrolledPast){resetline('.country');}}
+                if(!isNotScrolledPast){resetprofit();new2016()}
+                // if(X!==undefined){if(!isNotScrolledPast){resetprofit();}}
                 
                 break;
         };}
@@ -228,8 +228,7 @@ isCreated=true;
 }
 //to select specific country/industry's lines
 function resetline(name,filter){
-console.log(filter)
-console.log(name)
+plot.selectAll('.dots').style('opacity',.5);
 
     plot.selectAll('.country').transition().style('opacity',0);
     plot.selectAll(name).filter(d=>{
@@ -238,7 +237,7 @@ console.log(name)
             switch(name){
                 case '.China':return d[0].rank-d[d.length-1].rank>=100;
                 break;
-                case '.Hongkong':return d[0].rank-d[d.length-1].rank>=100;
+                case '.Hongkong':return d[0].change==filter;
                 break;
                 case '.Taiwan':return d[0].change==filter;
                 break;
@@ -258,7 +257,7 @@ console.log(name)
             switch(name){
                 case '.China':return d[0].change==filter;
                 break;
-                case '.Hongkong':return d[0].rank<=50&&d[d.length-1].rank<=50;
+                case '.Hongkong':return d[0].change==filter;
                 break;
                 case '.Taiwan':return d[0].change==filter;
                 break;
@@ -271,6 +270,7 @@ console.log(name)
         
     })
     .transition().duration(1000).style('opacity',.5)   
+    animationline();
 }
 
 //to draw line
@@ -349,7 +349,7 @@ updatedots.merge(enterdots)
     .transition().duration(2000)
     .attr('cx',function(d){return (d.year=='2016'||d.year=='2015')?scaleAsset(d.assets):w/2})
     .attr('cy',function(d){return (d.year=='2016'||d.year=='2015')?scaleProfit(d.profit):h/2})
-    .attr('r',function(d){return (d.year=='2016'||d.year=='2015')?(scaleEmployee(d.employee)+'px'):'4px'});
+    .attr('r',function(d){return (d.year=='2016'||d.year=='2015')?(scaleEmployee(d.employee)+'px'):'0px'});
 
 axisX.scale(scaleAsset).tickValues([250000,500000,1000000,2000000,2500000]);
 axisY.scale(scaleProfit).tickValues([-20000,-10000,0,10000,20000,30000,40000,50000]).tickSize(-w);
@@ -360,14 +360,17 @@ Y.call(axisY);
 
  }
 function resetprofit(){
+    console.log(years)
+plot.selectAll('.dots').style('opacity',.5)
 axisX.scale(scaleX).tickValues(years.keys()).tickSize(0);
 axisY.scale(scaleY).tickValues([1,100,200,300,400,500]).tickSize(-w);
 Y.call(axisY);
 X.call(axisX);
+updatedots.merge(enterdots)
+    .attr('cx',function(d){return scaleX(d.year)})
+    .attr('cy',function(d){return scaleY(d.rank)})
+    .attr('r','4px')
 
-// plot.selectAll('.country').style('opacity',.5);
-
-dots(fortune);new2016();
 
 }
 
