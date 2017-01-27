@@ -41,7 +41,7 @@ var Byname,fortune,updatedots,enterdots,rankbg,X,Y,isCreated,years;
 isCreated=false;
 // console.log(isCreated)
 
-d3.csv('../data/fortunedata_01222017.csv',parse,dataloaded);
+d3.csv('../data/fortunedata_01252017.csv',parse,dataloaded);
 
 function dataloaded(err, fortune){
 // console.table(fortune);
