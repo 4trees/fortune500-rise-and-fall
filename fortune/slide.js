@@ -30,4 +30,3 @@ function debounce(func, wait = 50, immediate = true) {
         if (callNow) func.apply(context, args);
       };
 };
-

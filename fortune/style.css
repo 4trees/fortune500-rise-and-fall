@@ -21,7 +21,7 @@ body{
 }
 
 
-.axis .tick text{
+.axis .tick text, .tagrank,.tagprofit{
 	fill: #DCD9B9;
 	font-size: .75em;
 }
@@ -29,12 +29,50 @@ body{
 	transform:rotate(30deg);
 	text-anchor:start;
 }
+#slide0{
+  text-align: center;
+  text-align: middle;
+    margin: 0 auto;
+}
+#slide0 h1{
+ margin-top: 16%;
+ font-size: 3em;
+}
+#slide0 h3{
+margin-top: 2.5%;
+font-size: 1.8em;
+}
+.intro{
+  padding-top: 5%;
+  width: 50%;
+  margin-left: 25%;
+  font-size: 1em;
+  padding-bottom: 20px;
+}
+.name{
+  padding-top: 0;
+  opacity: .8;
+}
+#slide0 img{
 
-
+  height: 100%;
+  width: auto;
+}
+.key text{
+    fill: #DCD9B9;
+    font-size: .75em;
+}
+.nametag text,.new2016tag text{
+    fill: #DCD9B9;
+    font-size: .75em;
+}
+.line path{
+  /*animation-iteration-count:infinite;*/
+}
 /*.line path {
   stroke-dasharray: 2000;
-  /*stroke-dashoffset: 0;*/
-/*  -webkit-animation: dash 5s linear infinite;
+  stroke-dashoffset: 0;
+  -webkit-animation: dash 5s linear infinite;
   animation: dash 5s linear infinite;
 }
 @-webkit-keyframes dash {

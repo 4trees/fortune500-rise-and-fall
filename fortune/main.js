@@ -1,11 +1,16 @@
-
+// const cavgram=document.querySelector('#diagram')
+// cavgram.classList.remove('col-lg-8','col-md-8', 'col-sm-8', 'col-xs-12')
+// cavgram.classList.add('col-lg-12','col-md-12', 'col-sm-12', 'col-xs-12')
+// const cav=document.querySelector('#canvas')
+// cav.classList.remove('canvas')
+// cav.classList.add('bigsight','bg')
 
 //init canvas
 var m = {t:30,r:20,b:50,l:50},
     w = document.getElementById('canvas').clientWidth - m.l - m.r,
     h = document.getElementById('canvas').clientHeight - m.t - m.b;
 
-var plot = d3.select('.canvas')
+var plot = d3.select('#canvas')
     .append('svg')
     .attr('width', w + m.l + m.r)
     .attr('height', h + m.t + m.b)
@@ -22,13 +27,13 @@ var scaleColor=d3.scaleOrdinal()
     .paddingInner(.6),
 	scaleY=d3.scaleLinear()
 	.domain([500,1])
-	.range([h,h/500]);
+	.range([h,h/500+h*.15]);
 var scaleProfit=d3.scalePow()
-    .exponent(.5)
-    .range([h,0]),
+    .exponent(.3)
+    .range([h,h/500+h*.15]),
     scaleAsset=d3.scalePow()
     .exponent(.5)
-    .range([w/22,w]),
+    .range([w/22,w-m.r]),
     scaleEmployee=d3.scaleLinear()
     .range([3,30]);
 var lineGenerator = d3.line()
@@ -39,13 +44,23 @@ var axisX = d3.axisBottom().tickPadding(10),
     axisY = d3.axisLeft().tickPadding(10);
 var Byname,fortune,updatedots,enterdots,rankbg,X,Y,isCreated,years;
 isCreated=false;
+
+
 // console.log(isCreated)
 
 //add animation to lines
-function animationline(){
+function setanimationline(){
     var paths=document.querySelectorAll('.country');
+
     paths.forEach(path=>{
-    // console.log(path)
+   animationline(path)
+   path.addEventListener("transitionend", function(d){animationline(path)});
+
+
+})
+}
+function animationline(path){
+    // console.log(path.getTotalLength())
     var length=path.getTotalLength();
     path.style.transition=path.style.WebkitTransition='none';
     path.style.strokeDasharray=length+' '+length;
@@ -54,7 +69,6 @@ function animationline(){
     path.style.transition=path.style.WebkitTransition='stroke-dashoffset 3s ease-in-out';
     path.style.strokeDashoffset='0';
 
-})
 }
 
 
@@ -66,14 +80,47 @@ function dataloaded(err, fortune){
 
 Byname=d3.nest()
     .key(function(d){return d.name}).sortKeys(d3.ascending)
+    .rollup(function(leaves){
+        var changes;
+        if(leaves[0].location=='China'&&leaves[0].rank-leaves[leaves.length-1].rank<=-1){return {values:leaves,
+        change:'down'}}
+        if(leaves[0].location=='Hongkong'&&leaves[0].rank-leaves[leaves.length-1].rank<=-1){return {values:leaves,
+        change:'down'}}
+        if(leaves[0].location=='China'&&leaves[0].rank-leaves[leaves.length-1].rank>=100){return {values:leaves,
+        change:'rapid'}}
+        else{return {values:leaves,
+        change:''}
+        }
+    })
     .entries(fortune)
 years=d3.map(fortune,function(d){return d.year})
 // console.log(years.keys())
 scaleX.domain(years.keys())
+// var num=Byname.filter(el=>{console.log(el.key+':'+el.value.values[0].location);return el.value.change=='down'&&el.value.values[0].location=='China'})
+
+// console.log(num.length)
+// Byname.forEach(function(d){
 
 
+//     if(d.values[0].change==""){
+
+//         if(d.values[0].location=='China'&&d.values[0].rank-d.values[d.values.length-1].rank>=100){d.values[0].change=='down'}
+//         if(d.values[0].location=='Hongkong'&&d.values[0].rank-d.values[d.values.length-1].rank>=100){d.values[0].change=='down'}
+//         if(d.values[0].location=='China'&&d.values[0].rank-d.values[d.values.length-1].rank<100){d.values[0].change=='rapid'}
+//     }
+// })
+// Byname.forEach(function(d){
+//     if(d.values[0].change=='down'&&d.values[0].location=='China'){console.log(d)}
+    
+// })
+// console.log(Byname)
 const slides = document.querySelectorAll('.slide');
-// const dia = document.querySelector('#diagram');
+
+// creatediagram()
+// dots(fortune);lines(Byname);resetline('.country');
+
+// plot.append('rect').attr('class','bg').attr('width',w+m.l+m.r).attr('height',h+m.t+m.b).attr('transform','translate('+(-m.l)+','+(-m.t)+')')
+
 function checkSlide(e) {
     // console.log(e)
     //     const diaInAt = (window.scrollY + window.innerHeight) - dia.clientHeight*1.5 ;
@@ -96,12 +143,18 @@ function checkSlide(e) {
          // console.log(slide.id+' :i am in');
          switch(slide.id){
             case 'slide1':
+                // cavgram.classList.remove('col-lg-12','col-md-12', 'col-sm-12', 'col-xs-12')
+                // cavgram.classList.add('col-lg-8','col-md-8', 'col-sm-8', 'col-xs-12')
+                // document.querySelector('#slide0').classList.remove('fix')
+                // cav.classList.remove('bigsight', 'bg')
+                // cav.classList.add('canvas')
+                
                 plot.selectAll('.country').remove();
                 if(!isCreated){creatediagram()}
                 dots(fortune);
                 break;
             case 'slide2':
-                plot.selectAll('.dots').transition().style('opacity',.5);lines(Byname);resetline('.China');
+                lines(Byname);resetline('.China');
                 // slide.classList.add('fix');
                 break;
             case 'slide3':
@@ -137,20 +190,20 @@ function checkSlide(e) {
             case 'slide13':
                 resetline('.country');
                 break;
-            case 'slide14':
-                resetline('.industrial');
-                break;
-            case 'slide15':
-                resetline('.money');
-                break;
-            case 'slide16':
-                plot.selectAll('.country').transition().style('opacity',0);
-                new2016();
-                break;
-            case 'slide17':
-                plot.selectAll('.line').transition().style('opacity',0);
-                profit(fortune);
-                break;
+            // case 'slide14':
+            //     resetline('.industrial');
+            //     break;
+            // case 'slide15':
+            //     resetline('.money');
+            //     break;
+            // case 'slide16':
+            //     plot.selectAll('.country').transition().style('opacity',0);
+            //     new2016();
+            //     break;
+            // case 'slide17':
+            //     plot.selectAll('.line').transition().style('opacity',0);
+            //     profit(fortune);
+            //     break;
          }
         } else {
           // console.log(slide.id+' :i am out');
@@ -196,20 +249,20 @@ function checkSlide(e) {
             case 'slide13':
                 if(!isNotScrolledPast){resetline('.Taiwan','down')}
                 break;
-            case 'slide14':
-                if(!isNotScrolledPast){resetline('.country')}
-                break;
-            case 'slide15':
-                if(!isNotScrolledPast){resetline('.industrial')}
-                break;
-            case 'slide16':
-                if(!isNotScrolledPast){resetline('.money');}
-                break;
-            case 'slide17':
-                if(!isNotScrolledPast){resetprofit();new2016()}
-                // if(X!==undefined){if(!isNotScrolledPast){resetprofit();}}
+            // case 'slide14':
+            //     if(!isNotScrolledPast){resetline('.country')}
+            //     break;
+            // case 'slide15':
+            //     if(!isNotScrolledPast){resetline('.industrial')}
+            //     break;
+            // case 'slide16':
+            //     if(!isNotScrolledPast){resetline('.money');}
+            //     break;
+            // case 'slide17':
+            //     if(!isNotScrolledPast){resetprofit();new2016()}
+            //     // if(X!==undefined){if(!isNotScrolledPast){resetprofit();}}
                 
-                break;
+            //     break;
         };}
       })
 }
@@ -225,10 +278,65 @@ Y=rankbg.append('g').attr('class','axis axis-y');
 rankbg.append('g').attr('class','circle');
 rankbg.append('g').attr('class','line');
 isCreated=true;
+d3.selectAll('.tagprofit').remove();
+plot.append("text").attr('class','tagrank')
+    .attr("transform", "translate(" + (w/2) + "," + (h + m.b/1.3) + ")")
+    .style("text-anchor", "middle")
+    .text("Year");
+plot.append("text").attr('class','tagrank')
+    .attr("transform", "translate(" + (-m.l/4) + "," + (m.t*2) + ")")
+    .style("text-anchor", "middle")
+    .text("Rank");
+var keys=[];
+keys.push({country:'China'});
+keys.push({country:'Hongkong'});
+keys.push({country:'Taiwan'});
+var key=plot.selectAll('.key').data(keys).enter().append("g").attr('class','key').attr("transform", function(d,i){return 'translate('+(i+1)*(w/4)+','+(m.t)+')'})
+
+
+key.append('circle')
+    .attr('r',6)
+    // .attr('transform',function(d,i){return 'translate('+i*30+',0)'})
+    .style('stroke',function(d){return scaleColor(d.country)})
+    .style('stroke-width','2px')
+    .style('fill','none')
+key.append('text')
+    .style("text-anchor", "left")
+    .text(function(d){return d.country})
+    .attr('transform',function(d){return 'translate('+15+','+5+')'});
+
 }
 //to select specific country/industry's lines
 function resetline(name,filter){
-plot.selectAll('.dots').style('opacity',.5);
+    // console.log(name.substr(1))
+if(name!='.country'){
+    plot.selectAll('.dots').style('opacity',.3);
+// if(name=='.industrial'||name=='.money'){
+   
+//     plot.selectAll('.dots').filter(d=>{
+//         return d.industry==name.substr(1);
+//     }).style('opacity',.9)
+// }
+// else{
+    
+var getchange=d3.map(Byname,function(d){return d.key})
+plot.selectAll('.dots').filter(d=>{
+    // console.log(d)
+    var itschange=getchange.get(d.name)
+    // console.log(itschange.value.change)
+    // return filter==undefined?d.location!==name.substr(1):d.location!==name.substr(1)||d.change!==filter;
+    if(filter==undefined){
+        return d.location==name.substr(1);
+    }
+    else{
+        // console.log(d.change+":"+itschange.value.change)
+
+        return d.change==""?d.location==name.substr(1)&&itschange.value.change==filter:d.location==name.substr(1)&&d.change==filter
+    }
+})
+    .style('opacity',.9)  
+// }   
+}else{plot.selectAll('.dots').style('opacity',.9)}
 
     plot.selectAll('.country').transition().style('opacity',0);
     plot.selectAll(name).filter(d=>{
@@ -245,9 +353,9 @@ plot.selectAll('.dots').style('opacity',.5);
         break;
         case 'down':
             switch(name){
-                case '.China':return d[0].rank-d[d.length-1].rank<0;
+                case '.China':return d[0].rank-d[d.length-1].rank<=-1;
                 break;
-                case '.Hongkong':return d[0].rank-d[d.length-1].rank<0;
+                case '.Hongkong':return d[0].rank-d[d.length-1].rank<=-1;
                 break;
                 case '.Taiwan':return d[0].change==filter;
                 break;
@@ -269,8 +377,9 @@ plot.selectAll('.dots').style('opacity',.5);
     }
         
     })
-    .transition().duration(1000).style('opacity',.5)   
-    animationline();
+    .transition().style('opacity',.5)   
+    setanimationline();
+
 }
 
 //to draw line
@@ -283,19 +392,23 @@ axisY.scale(scaleY).tickValues([1,100,200,300,400,500]).tickSize(-w);
 X.call(axisX);
 Y.call(axisY);
 var enterline=updateline.enter()
-        .append('path').attr('class',function(d){return 'country '+d.values[0].location+' '+d.values[0].change+' '+d.values[0].industry})
-        .datum(function(d){return d.values})
+        .append('path').attr('class',function(d){return 'country '+d.value.values[0].location+' '+d.value.change+' '+d.value.values[0].industry})
+        .datum(function(d){return d.value.values})
         .attr('d',function(d){return lineGenerator(d);})
         
 updateline.merge(enterline)
-        .style('stroke',function(d){return d[0].rank-d[d.length-1].rank>=0?scaleColor(d[0].location):'#999'})
+        .style('stroke',function(d){return scaleColor(d[0].location)})
         .style('fill','none')
         .style('opacity',.5)
         .style('stroke-width',2)
         
 updateline.exit().remove(); 
-animationline();
+setanimationline();
+// plot.selectAll('.dots').data(data).classed('down',d.values[0].location=='China'&&d.values[0].rank-d.values[d.values.length-1].rank>=100)
 
+// if(d.values[0].location=='China'&&d.values[0].rank-d.values[d.values.length-1].rank>=100){d.values[0].change=='down'}
+//         if(d.values[0].location=='Hongkong'&&d.values[0].rank-d.values[d.values.length-1].rank>=100){d.values[0].change=='down'}
+//         if(d.values[0].location=='China'&&d.values[0].rank-d.values[d.values.length-1].rank<100){d.values[0].change=='rapid'}
 }
 //to draw dots
 function dots(data){
@@ -316,7 +429,29 @@ enterdots=updatedots.enter()
     .style('opacity',0)
     .attr('r',0)
     .on('click',function(d){console.log(d.rank)})
-    
+var updatetag=plot.selectAll('.nametag').data(data),
+entertag=updatetag.enter().append('g')
+    .attr('class',function(d){return d.year=='2016'&&d.prerank==undefined?'nametag new2016tag':'nametag'})
+    .attr("transform", function(d){return 'translate('+scaleX(d.year)+','+scaleY(d.rank)+')'})
+    .append('text').style("text-anchor", "right")
+    .text(function(d){return d.name})
+
+    .style('opacity',0);
+// var texts=document.querySelectorAll('.new2016tag')
+// texts.forEach(node=>{
+//     var text = node;
+//     var bbox = text[0].getBBox();
+//     var padding = 2;
+//     var rect = self.plot.insert("rect", '.new2016tag')
+//     .attr('class','bgtext')
+//     .attr("x", bbox.x - padding)
+//     .attr("y", bbox.y - padding)
+//     .attr("width", bbox.width + (padding*2))
+//     .attr("height", bbox.height + (padding*2))
+//     .style("fill", "#3B4654")
+//     .style('opacity',0);
+//     console.log(text)
+// })    
 updatedots.merge(enterdots)
     .transition().duration(2000)
     .attr('cx',function(d){return scaleX(d.year)})
@@ -325,6 +460,16 @@ updatedots.merge(enterdots)
     .attr('r','4px')
 
 updatedots.exit().remove(); 
+
+var rule=d3.forceManyBody()
+    .strength(-30);
+var simulation=d3.forceSimulation(data)
+    .force('rule',rule)
+    .on('tick',function(d){
+        plot.selectAll('.new2016tag')
+        .attr("transform", function(d){return 'translate('+scaleX(d.year)+','+scaleY(d.rank)+')'})
+    })
+
 }
 
 //only 2016 new
@@ -332,6 +477,8 @@ function new2016(){
 // plot.select('.rank').attr('transform','translate('+ (-w/2)+','+ 0+')');
 plot.selectAll('.dots').transition().duration(1000).style('opacity',0.1);
 plot.selectAll('.new2016').transition().duration(1000).style('opacity',1)
+plot.selectAll('.new2016tag').select('text').transition().duration(1000).style('opacity',1)
+plot.selectAll('.bgtext').transition().duration(1000).style('opacity',.6)
 }
 
 //draw profit
@@ -351,12 +498,20 @@ updatedots.merge(enterdots)
     .attr('cy',function(d){return (d.year=='2016'||d.year=='2015')?scaleProfit(d.profit):h/2})
     .attr('r',function(d){return (d.year=='2016'||d.year=='2015')?(scaleEmployee(d.employee)+'px'):'0px'});
 
-axisX.scale(scaleAsset).tickValues([250000,500000,1000000,2000000,2500000]);
-axisY.scale(scaleProfit).tickValues([-20000,-10000,0,10000,20000,30000,40000,50000]).tickSize(-w);
+axisX.scale(scaleAsset).tickValues([200000,500000,1000000,1750000,2500000]);
+axisY.scale(scaleProfit).tickValues([-20000,-10000,0,5000,15000,25000,45000]).tickSize(-w);
 
 X.call(axisX);
 Y.call(axisY); 
-
+d3.selectAll('.tagrank').remove();
+plot.append("text").attr('class','tagprofit')
+    .attr("transform", "translate(" + (w-m.r/2) + "," + (h - m.b/2) + ")")
+    .style("text-anchor", "middle")
+    .text("Assets");
+plot.append("text").attr('class','tagprofit')
+    .attr("transform", "translate(" + (-m.l/10*4) + "," + (-m.t/2) + ")")
+    .style("text-anchor", "middle")
+    .text("Profit");
 
  }
 function resetprofit(){
