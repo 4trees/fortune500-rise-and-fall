@@ -44,6 +44,7 @@ function setanimationline(){
     var paths = document.querySelectorAll('.country');
     paths.forEach(path=>{
         animationline(path)
+        // setInterval(function(){},6000)
         path.addEventListener("transitionend", function(d){animationline(path)});
     })
 }
@@ -372,7 +373,7 @@ var enterdots = updatedots.enter()
     
 updatedots.merge(enterdots)
     .attr('cy',function(d){return scaleY(d.rank)})
-    .transition()
+    .transition().duration(500)
     .attr('cx',function(d){return scaleX(d.year)})
 
 }
