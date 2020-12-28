@@ -60,7 +60,7 @@ function animationline(path){
 }
 
 
-d3.csv('../data/fortunedata_01252017.csv',parse,dataloaded);
+d3.csv('data/fortunedata_01252017.csv',parse,dataloaded);
 function dataloaded(err, fortune){
 console.table(fortune);
 Byname = d3.nest()
